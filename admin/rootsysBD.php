@@ -14,7 +14,7 @@
     header('WWW-Authenticate: Basic realm="Sistema de autenticación de prueba"');
     header('HTTP/1.0 401 Unauthorized');
 */
-define("FAIL_PATH","./Dinamica");
+define("FAIL_PATH","./Dinamica/fallo");
 try{
     if(!file_exists(FAIL_PATH . "/index.php")){
         throw new Exception("Error en ruta: " . FAIL_PATH . "/index.php");
@@ -32,24 +32,24 @@ class cargaAdmin{
         $ejercicio=array("back","front","deep");
         //$servername = "https://sldn296.piensasolutions.com/";
         $servername = $_SERVER["SERVER_NAME"];
-        $username = "qaip115";
-        $password = "P3rpr1+M1v8-S0d0";
-        $dbname = "qaip115";
+        $username = "";
+        $password = "";
+        $dbname = "";
         $this->adminBD[$ejercicio[0]][]=array(
             "local" => $servername,
-            "remoto" => "sldn296.piensasolutions.com"
+            "remoto" => ""
         );
         $this->adminBD[$ejercicio[0]][]=$username;
         $this->adminBD[$ejercicio[0]][]=$password;
         $this->adminBD[$ejercicio[0]][]=$dbname;
         //$servername = "https://sldn296.piensasolutions.com/";
         $servername = $_SERVER["SERVER_NAME"];
-        $username = "qaiq163";
+        $username = "";
         $password = "";
-        $dbname = "qaip115";
+        $dbname = "";
         $this->adminBD[$ejercicio[1]][]=array(
             "local" => $servername,
-            "remoto" => "sldn296.piensasolutions.com"
+            "remoto" => ""
         );
         $this->adminBD[$ejercicio[1]][]=$username;
         $this->adminBD[$ejercicio[1]][]=$password;
