@@ -34,20 +34,25 @@
  *
  */
 
-if(ROOT_INDEX != "/srv/vhost/derootty.xyz/home/html/index.php"){
-  define("FLOW_PATH","./Dinamica");
-  try{
-    if(!file_exists(FAIL_PATH . "/index.php")){
-        throw new Exception("Error en ruta: " . FAIL_PATH . "/index.php");
+    if(ROOT_INDEX != "/srv/vhost/derootty.xyz/home/html/index.php"){
+      define("FLOW_PATH","./Dinamica");
+      try{
+        if(!file_exists(BASE_PATH . FAIL_PATH . "/index.php")){
+            throw new Exception("Error en ruta: " . BASE_PATH . FAIL_PATH . "/index.php");
+        }
+        if(!file_exists(ROOT_INDEX)){
+            throw new Exception("Error en ruta: " . ROOT_INDEX . "/index.php");
+        }
+      }catch(Exception $e){
+        print "Se deberia generar un archivo de reporte log: " . "Origen: " . __NAMESPACE__ . " => " . __LINE__ . $e->getMessage();
+        header("Location: /Dinamica/fallos/EC_4XX/EC_404/index.php?setdata=Pagina_no_Encontrada");
+        exit;
+      }
+      require_once FAIL_PATH . "/index.php";
+      exit;
     }
-  }catch(Exception $e){
-    print "Se deberia generar un archivo de reporte log: " . "Origen: " . __FILE__ . " => " . __LINE__ . $e->getMessage();
-    header("Location: /Dinamica/fallos/EC_4XX/EC_404/index.php?setdata=Pagina_no_Encontrada");
-    exit;
-  }
-  require_once FAIL_PATH . "/index.php";
-  exit;
-}else if(file_exists(ROOT_INDEX)){
+
+
   class indexesARCH{
 
     public array $indexARCH;
@@ -151,9 +156,9 @@ if(ROOT_INDEX != "/srv/vhost/derootty.xyz/home/html/index.php"){
       //array_push($this->indexARCH, $ruta);
     }
   }
-}
 
-require_once(__DIR__ . ADMIN_PATH . "/rootsysBD.php");
+
+require_once(BASE_PATH . ADMIN_PATH . "/rootsysBD.php");
 
 class salidaFinVista{
 
