@@ -1,43 +1,39 @@
 <?php declare(strict_types=1);
-  
+
+/**
+ * @copyright 2024 Control de flujo del mapa web
+ * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @version $Id: index.php 14084 2024-01-06 02:44:03Z pdontthink $
+ * @author David Salado Rodriguez
+ * @package practicasAPP
+ * @link http://www.derootty.xyz
+ * @todo Se contemplan seis facetas comunes a toda dinamica de app web:
+ * 00.- Envio de comunicaciones por escrito.
+ * 01.- Inicio de sesion 'perfecto'.
+ * 02.- Una muestra de tienda online.
+ * 03.- Una pasarela de pagos.
+ * 04.- Solicitud de mas informacion (gestion por email).
+ * 05.- Un cliente de correo electronico (SquierrerMail).
+ *
+ * PD: para futuras versiones se contempla la posibilidad de conexion a bases de datos, incluyendo la integracion de phpmyadmin
+ */
+
   namespace practicasAPP;
-  define("FLOW_PATH", "/Dinamica");
-  define("ADMIN_PATH", "/admin");
-  define("ASSET_PATH", "/assets");
-  define("SECURITY_PATH", "/");
-/*
-  use Google\Cloud\Monitoring\V3\MonitoringClient;
+  define("BASE_PATH", "/srv/vhost/derootty.xyz/home/html");
+  define("ENV_PATH", "/Dinamica/Entorno");          //Se deja constancia del estado del servicio dentro del flujo del entorno.
+  define("FAIL_PATH", "/Dinamica/fallos");          //Se deja constancia del estado del servicio dentro del tratamiento de las excepciones.
+  define("SECURITY_PATH", "/Dinamica/seguridad");   //Se firman todos los archivos que entran dentro de la solicitud.
+  define("FLOW_PATH", "/Dinamica");                 //Se discrimina si el flujo deriva para el entorno, para el fallo y/o seguridad.
+  define("ADMIN_PATH", "/admin");                   //Condiciones de respuesta al cleinte, si se cumplen, el flujo trazara hacia el Entorno, sino, hacia el fallo
+  define("ASSET_PATH", "/assets");                  //Se cargan los elementos externos y las dependencias de terceros.
+  define("ROOT_INDEX", __FILE__);                   //Privilegios con los que se marca el flujo.
 
-$projectId = 'YOUR_PROJECT_ID';
-$client = new MonitoringClient([
-  'projectId' => $projectId,
-]);
-
-$metricQuery = 'gce_instance/network/bytes_received';
-$filter = "resource.type=\"gce_instance\" AND resource.labels.instance_name=\"YOUR_INSTANCE_NAME\"";
-
-$response = $client->queryTimeSeries($metricQuery, [
-  'filter' => $filter,
-  'interval' => ['startTime' => '1h', 'endTime' => 'now'],
-]);
-
-foreach ($response->getTimeSeries() as $timeSeries) {
-  foreach ($timeSeries->getPoints() as $point) {
-    echo "Tiempo: " . $point->getInterval()->getStartTime()->getDateTime() . PHP_EOL;
-    echo "Valor: " . $point->getValue() . PHP_EOL;
-  }
-}
-*/
-
-//="([(A-z;\d;\s;\-;:|/;.;,;s|/)]*)"
-//='"."$1"."'
-//="(\w.*?)"
 
 /**
  * Iniciamos la app web instanciando el archivo app root, con privilegios absolutos
- * 
+ *
  */
-define("ROOT_INDEX", __FILE__);
+
 if(ROOT_INDEX != "/srv/vhost/derootty.xyz/home/html/index.php"){
   define("FLOW_PATH","./Dinamica");
   try{
@@ -60,7 +56,7 @@ if(ROOT_INDEX != "/srv/vhost/derootty.xyz/home/html/index.php"){
     private string $enProceso;
 
     public function __construct(string $rootFile){
-      
+
       $this->enProceso = $rootFile;
       $phh=0;
       $ordtohex=array(
@@ -96,53 +92,52 @@ if(ROOT_INDEX != "/srv/vhost/derootty.xyz/home/html/index.php"){
 
         $this->LyIndexARCH = array_flip($this->idIndexARCH);
         $ii=-1;
-        $this->indexARCH = array(
-          "binario"=>array(
-            $this->LyIndexARCH[$ii++] => array(),
-            $this->LyIndexARCH[$ii++] => array(),
-            $this->LyIndexARCH[$ii++] => array(),
-            $this->LyIndexARCH[$ii++] => array(),
-            $this->LyIndexARCH[$ii++] => array(),
-            $this->LyIndexARCH[$ii++] => array(),
-            $this->LyIndexARCH[$ii++] => array(),
-            $this->LyIndexARCH[$ii++] => array()
-          ),
-          "hash"=>array(
-            $this->LyIndexARCH[$ii--] => array(),
-            $this->LyIndexARCH[$ii--] => array(),
-            $this->LyIndexARCH[$ii--] => array(),
-            $this->LyIndexARCH[$ii--] => array(),
-            $this->LyIndexARCH[$ii--] => array(),
-            $this->LyIndexARCH[$ii--] => array(),
-            $this->LyIndexARCH[$ii--] => array(),
-            $this->LyIndexARCH[$ii--] => array()
-          ));
-          $ii=-1;
-
+        $this->indexARCH = array("binario"=>array());
+        $this->indexARCH = array("hash"=>array());
+        $this->indexARCH["binario"][$this->LyIndexARCH[$ii++]] = array();
+        $this->indexARCH["binario"][$this->LyIndexARCH[$ii++]] = array();
+        $this->indexARCH["binario"][$this->LyIndexARCH[$ii++]] = array();
+        $this->indexARCH["binario"][$this->LyIndexARCH[$ii++]] = array();
+        $this->indexARCH["binario"][$this->LyIndexARCH[$ii++]] = array();
+        $this->indexARCH["binario"][$this->LyIndexARCH[$ii++]] = array();
+        $this->indexARCH["binario"][$this->LyIndexARCH[$ii++]] = array();
+        $this->indexARCH["binario"][$this->LyIndexARCH[$ii++]] = array();
+        $this->indexARCH["hash"][$this->LyIndexARCH[$ii++]] = array();
+        $this->indexARCH["hash"][$this->LyIndexARCH[$ii++]] = array();
+        $this->indexARCH["hash"][$this->LyIndexARCH[$ii++]] = array();
+        $this->indexARCH["hash"][$this->LyIndexARCH[$ii++]] = array();
+        $this->indexARCH["hash"][$this->LyIndexARCH[$ii++]] = array();
+        $this->indexARCH["hash"][$this->LyIndexARCH[$ii++]] = array();
+        $this->indexARCH["hash"][$this->LyIndexARCH[$ii++]] = array();
+        $this->indexARCH["hash"][$this->LyIndexARCH[$ii++]] = array();
         //echo password_hash("rasmuslerdorf", PASSWORD_BCRYPT, $opciones)."\n";
       }
-
     }
 
+    /**
+     * Firma de la pagina para instancia de carga
+     *
+     */
+
     private function instanciaPagina(string $instanciaFirma): int{
-      array_push($this->indexARCH["binario"][$this->LyIndexARCH[$ii++]], base64_encode(dechex(filectime($rootFile))));
-      array_push($this->indexARCH["binario"][$this->LyIndexARCH[$ii++]], base64_encode(dechex(fileatime($rootFile))));
+      array_push($this->indexARCH["binario"][$this->LyIndexARCH[$ii++]], base64_encode(dechex(filectime($instanciaFirma))));
+      array_push($this->indexARCH["binario"][$this->LyIndexARCH[$ii++]], base64_encode(dechex(fileatime($instanciaFirma))));
       array_push($this->indexARCH["binario"][$this->LyIndexARCH[$ii++]], base64_encode(getmyinode()));
-      array_push($this->indexARCH["binario"][$this->LyIndexARCH[$ii++]], base64_encode(dechex(fileinode($rootFile))));
-      array_push($this->indexARCH["binario"][$this->LyIndexARCH[$ii++]], base64_encode(dechex(filegroup($rootFile))));
-      array_push($this->indexARCH["binario"][$this->LyIndexARCH[$ii++]], base64_encode(dechex(fileowner($rootFile))));
+      array_push($this->indexARCH["binario"][$this->LyIndexARCH[$ii++]], base64_encode(dechex(fileinode($instanciaFirma))));
+      array_push($this->indexARCH["binario"][$this->LyIndexARCH[$ii++]], base64_encode(dechex(filegroup($instanciaFirma))));
+      array_push($this->indexARCH["binario"][$this->LyIndexARCH[$ii++]], base64_encode(dechex(fileowner($instanciaFirma))));
       array_push($this->indexARCH["binario"][$this->LyIndexARCH[$ii++]], base64_encode("David Salado Rodriguez"));
       array_push($this->indexARCH["binario"][$this->LyIndexARCH[$ii--]], base64_encode(implode("", $this->indexARCH["hash"])));
 
-      array_push($this->indexARCH["hash"][$this->LyIndexARCH[$ii--]], base64_encode(password_hash(dechex(filectime($rootFile)), PASSWORD_BCRYPT, $opciones)));
-      array_push($this->indexARCH["hash"][$this->LyIndexARCH[$ii--]], base64_encode(password_hash(dechex(fileatime($rootFile)), PASSWORD_BCRYPT, $opciones)));
+      array_push($this->indexARCH["hash"][$this->LyIndexARCH[$ii--]], base64_encode(password_hash(dechex(filectime($instanciaFirma)), PASSWORD_BCRYPT, $opciones)));
+      array_push($this->indexARCH["hash"][$this->LyIndexARCH[$ii--]], base64_encode(password_hash(dechex(fileatime($instanciaFirma)), PASSWORD_BCRYPT, $opciones)));
       array_push($this->indexARCH["hash"][$this->LyIndexARCH[$ii--]], base64_encode(password_hash(getmyinode())));
-      array_push($this->indexARCH["hash"][$this->LyIndexARCH[$ii--]], base64_encode(password_hash(dechex(fileinode($rootFile)), PASSWORD_BCRYPT, $opciones)));
-      array_push($this->indexARCH["hash"][$this->LyIndexARCH[$ii--]], base64_encode(password_hash(dechex(filegroup($rootFile)), PASSWORD_BCRYPT, $opciones)));
-      array_push($this->indexARCH["hash"][$this->LyIndexARCH[$ii--]], base64_encode(password_hash(dechex(fileowner($rootFile)), PASSWORD_BCRYPT, $opciones)));
+      array_push($this->indexARCH["hash"][$this->LyIndexARCH[$ii--]], base64_encode(password_hash(dechex(fileinode($instanciaFirma)), PASSWORD_BCRYPT, $opciones)));
+      array_push($this->indexARCH["hash"][$this->LyIndexARCH[$ii--]], base64_encode(password_hash(dechex(filegroup($instanciaFirma)), PASSWORD_BCRYPT, $opciones)));
+      array_push($this->indexARCH["hash"][$this->LyIndexARCH[$ii--]], base64_encode(password_hash(dechex(fileowner($instanciaFirma)), PASSWORD_BCRYPT, $opciones)));
       array_push($this->indexARCH["hash"][$this->LyIndexARCH[$ii--]], base64_encode(password_hash("David Salado Rodriguez", PASSWORD_BCRYPT, $opciones)));
       array_push($this->indexARCH["hshOne"][$this->LyIndexARCH[$ii--]], base64_encode(password_hash(implode("", $this->indexARCH["hash"]), PASSWORD_BCRYPT, $opciones)));
-      
+
       return -1;
     }
 
@@ -158,10 +153,7 @@ if(ROOT_INDEX != "/srv/vhost/derootty.xyz/home/html/index.php"){
   }
 }
 
-
-
-define("BACK", "admin");
-require_once(BACK . "/rootsysBD.php");
+require_once(__DIR__ . ADMIN_PATH . "/rootsysBD.php");
 
 class salidaFinVista{
 
@@ -181,9 +173,9 @@ class salidaFinVista{
 
   /**
    * Pantalla de inicio o error
-   * 
+   *
    * $opcion - string
-   * 
+   *
    * Valores admitidos:
    *  1.- "index"
    *  2.- "error"
@@ -216,6 +208,13 @@ class salidaFinVista{
     array_push($salida, implode("", $this->salidaFinHTML));
     return $salida;
   }
+
+
+  /**
+   * Carga datos del esqueleto html
+   *
+   */
+
   private function estructuraHTML(){
     if(!file_exists("/mydata/app/esqueleto.php")){
       echo "Error en ".__FILE__." Linea: ".__LINE__;
@@ -224,6 +223,11 @@ class salidaFinVista{
     require_once("/mydata/app/esqueleto.php");
 
   }
+
+/**
+ * Carga datos de la plantilla de error en html
+ *
+ */
 
   private function errorHTML(){
     if(!file_exists("/mydata/app/error.php")){
@@ -234,6 +238,10 @@ class salidaFinVista{
 
   }
 
+  /**
+   * Carga datos de la plantilla de inicio en html
+   *
+   */
   private function indexHTML(){
     if(!file_exists("/mydata/app/inicio.php")){
       echo "Error en ".__FILE__." Linea: ".__LINE__;
@@ -265,7 +273,7 @@ class salidaFinVista{
         if(count($backToMain)>0){
           $idStart=explode("=>",$backToMain[count($backToMain)-1]);
         }
-        foreach($this->error as $ivVal1 => $valEnd1){
+        foreach($this->error as $idVal1 => $valEnd1){
           if(isset($idStart) && is_array($idStart)){
             $idStartUp=$idStart[1];
           }else if(empty($idStartUp)){
@@ -291,7 +299,17 @@ class salidaFinVista{
 
   }
   public function salidaNavegacion(array $paginaDestino): array{
+    $salida = array();
+    $backToMain = array();
+    $idStart = array();
+    $addArray=false;
+    foreach($paginaDestino as $idVal => $valEnd){
+      if(substr($valEnd,0,9)=="<flowCode"){
 
+      }
+        array_push($salida, $valEnd);
+    }
+    return $salida;
   }
 }
 
