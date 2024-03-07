@@ -1,0 +1,8 @@
+<?php
+
+/* 
+ * /admin/index.php
+ * 
+ * 
+ */
+

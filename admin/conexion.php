@@ -1,4 +1,15 @@
 <?php declare(strict_types=1);
+try{
+    //verificamos que el entorno es el adecuado
+  if(!defined("ENV_PATH") || !defined("FAIL_PATH") || !defined("SECURITY_PATH") || !defined("FLOW_PATH") || !defined("ADMIN_PATH") || !defined("ASSET_PATH") || !defined("ROOT_INDEX"))
+  {
+      throw new Exception("Este archivo ".__FILE__." >> ".__LINE__." no hereda los permisos de ejecucion");
+  }
+} catch (Exception $e){
+    echo $e->getMessage();
+    exit;
+}  
+
 /*
     $ejercicio=array();
     $queEjercicio=0;
@@ -69,7 +80,7 @@
             return $this->statusConn;        
         }
     }
-    require_once "admin/rootsysBD.php";
+    //require_once "admin/rootsysBD.php";
     $bdConect=new cargaAdmin();
     $queBD=2;
     $setData=array();
@@ -101,7 +112,7 @@
         }else if(!$booCon[0]){
             header('Location: /Dinamica/fallos/index.php?booConn='.$e->getMessage());
         }
-        echo "Se deberia estar creando un archivo de registro para este error: ".$e->getMessage()."<br>\n";
+        echo "Se deberia estar creando 1 archivo de registro para este error: ".$e->getMessage()."<br>\n";
         exit;
     }
     function lanzaConexion(&$adminCrud,&$conn){
@@ -157,4 +168,3 @@
         echo "</pre>";
         exit;
     }
-?>
