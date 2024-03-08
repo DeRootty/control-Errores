@@ -19,6 +19,10 @@
  */
 
   namespace practicasAPP;
+  
+    use Exception;
+
+  
   define("BASE_PATH", "/srv/vhost/derootty.xyz/home/html");
   define("ENV_PATH", "/Dinamica/Entorno");          //Se deja constancia del estado del servicio dentro del flujo del entorno.
   define("FAIL_PATH", "/Dinamica/fallos");          //Se deja constancia del estado del servicio dentro del tratamiento de las excepciones.
@@ -320,6 +324,8 @@ class salidaFinVista{
 
 $renderVista = new salidaFinVista();
 
+echo "El ciclo de chequeo de errores esta casi acabado. Actualmente el sistema me reporta un error 500. Me uqeda el renderizado del resultado";
+/*
 if(!file_exists("insert.sql")){
   try{
     $archivo=$renderVista->salidaSQL();
@@ -346,3 +352,5 @@ if(!file_exists("insert.sql")){
     print "El archivo se ha borrado y se ha creado de nuevas <br>\n";
   }
 }
+ * 
+ */
