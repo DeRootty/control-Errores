@@ -23,334 +23,154 @@
     use Exception;
 
   
-  define("BASE_PATH", "/srv/vhost/derootty.xyz/home/html");
-  define("ENV_PATH", "/Dinamica/Entorno");          //Se deja constancia del estado del servicio dentro del flujo del entorno.
-  define("FAIL_PATH", "/Dinamica/fallos");          //Se deja constancia del estado del servicio dentro del tratamiento de las excepciones.
-  define("SECURITY_PATH", "/Dinamica/seguridad");   //Se firman todos los archivos que entran dentro de la solicitud.
-  define("FLOW_PATH", "/Dinamica");                 //Se discrimina si el flujo deriva para el entorno, para el fallo y/o seguridad.
-  define("ADMIN_PATH", "/admin");                   //Condiciones de respuesta al cleinte, si se cumplen, el flujo trazara hacia el Entorno, sino, hacia el fallo
-  define("ASSET_PATH", "/assets");                  //Se cargan los elementos externos y las dependencias de terceros.
-  define("ROOT_INDEX", __FILE__);                   //Privilegios con los que se marca el flujo.
+  define("BASE_PATH", "/srv/vhost/derootty.xyz/home/html");     //
+  define("ENV_PATH", "/Dinamica/Entorno");                      //Se deja constancia del estado del servicio dentro del flujo del entorno.
+  define("FAIL_PATH", "/Dinamica/fallos");                      //Se deja constancia del estado del servicio dentro del tratamiento de las excepciones.
+  define("SECURITY_PATH", "/Dinamica/seguridad");               //Se firman todos los archivos que entran dentro de la solicitud.
+  define("FLOW_PATH", "/Dinamica");                             //Se discrimina si el flujo deriva para el entorno, para el fallo y/o seguridad.
+  define("ADMIN_PATH", "/admin");                               //Condiciones de respuesta al cleinte, si se cumplen, el flujo trazara hacia el Entorno, sino, hacia el fallo
+  define("ASSET_PATH", "/assets");                              //Se cargan los elementos externos y las dependencias de terceros.
+  define("INDEX_PATH", "/indexes");                             //Se accede a los modulos de carga para el arranque de index.php
+  define("ROOT_INDEX", __FILE__);                               //Privilegios con los que se marca el flujo.
 
 
 /**
  * Iniciamos la app web instanciando el archivo app root, con privilegios absolutos
  *
  */
-
-    if(ROOT_INDEX != "/srv/vhost/derootty.xyz/home/html/index.php"){
-      define("FLOW_PATH","./Dinamica");
-      try{
-        if(!file_exists(BASE_PATH . FAIL_PATH . "/index.php")){
-            throw new Exception("Error en ruta: " . BASE_PATH . FAIL_PATH . "/index.php");
-        }
-        if(!file_exists(ROOT_INDEX)){
-            throw new Exception("Error en ruta: " . ROOT_INDEX . "/index.php");
-        }
-      }catch(Exception $e){
-        print "Se deberia generar un archivo de reporte log: " . "Origen: " . __NAMESPACE__ . " => " . __LINE__ . $e->getMessage();
-        header("Location: /Dinamica/fallos/EC_4XX/EC_404/index.php?setdata=Pagina_no_Encontrada");
-        exit;
-      }
-      require_once FAIL_PATH . "/index.php";
-      exit;
-    }
-
-
-  class indexesARCH{
-
-    public array $indexARCH;
-    private array $idIndexARCH;
-    private array $LyIndexARCH;
-    private string $enProceso;
-
-    public function __construct(string $rootFile){
-
-      $this->enProceso = $rootFile;
-      $phh=0;
-      $ordtohex=array(
-        "str"=>array(),
-        "ord"=>array(),
-        "hex"=>array()
-      );
-      $prorratt=array();
-      $ordtohex["str"] = explode("", $rootFile);
-      foreach($ordtohex["str"] as $idVal => $valEnd){
-        $phh++;
-        array_push($ordtohex["ord"], ord($valEnd));
-        array_push($ordtohex["hex"], dechex(ord($valEnd)));
-      }
-      array_push($prorratt, $phh/8);
-      array_push($prorratt, $phh%8);
-
-      if (getmyinode() == fileinode($rootFile)) {
-        $this->idIndexARCH = array(
-          dechex($ii++)."x" => 0,
-          dechex($ii++)."x" => 1,
-          dechex($ii++)."x" => 2,
-          dechex($ii++)."x" => 3,
-          dechex($ii++)."x" => 4,
-          dechex($ii++)."x" => 5,
-          dechex($ii++)."x" => 6,
-          dechex($ii++)."x" => 7,
-          dechex($ii++)."x" => 8
-        );
-        $opciones = [
-          'cost' => 12,
-        ];
-
-        $this->LyIndexARCH = array_flip($this->idIndexARCH);
-        $ii=-1;
-        $this->indexARCH = array("binario"=>array());
-        $this->indexARCH = array("hash"=>array());
-        $this->indexARCH["binario"][$this->LyIndexARCH[$ii++]] = array();
-        $this->indexARCH["binario"][$this->LyIndexARCH[$ii++]] = array();
-        $this->indexARCH["binario"][$this->LyIndexARCH[$ii++]] = array();
-        $this->indexARCH["binario"][$this->LyIndexARCH[$ii++]] = array();
-        $this->indexARCH["binario"][$this->LyIndexARCH[$ii++]] = array();
-        $this->indexARCH["binario"][$this->LyIndexARCH[$ii++]] = array();
-        $this->indexARCH["binario"][$this->LyIndexARCH[$ii++]] = array();
-        $this->indexARCH["binario"][$this->LyIndexARCH[$ii++]] = array();
-        $this->indexARCH["hash"][$this->LyIndexARCH[$ii++]] = array();
-        $this->indexARCH["hash"][$this->LyIndexARCH[$ii++]] = array();
-        $this->indexARCH["hash"][$this->LyIndexARCH[$ii++]] = array();
-        $this->indexARCH["hash"][$this->LyIndexARCH[$ii++]] = array();
-        $this->indexARCH["hash"][$this->LyIndexARCH[$ii++]] = array();
-        $this->indexARCH["hash"][$this->LyIndexARCH[$ii++]] = array();
-        $this->indexARCH["hash"][$this->LyIndexARCH[$ii++]] = array();
-        $this->indexARCH["hash"][$this->LyIndexARCH[$ii++]] = array();
-        //echo password_hash("rasmuslerdorf", PASSWORD_BCRYPT, $opciones)."\n";
-      }
-    }
-
-    /**
-     * Firma de la pagina para instancia de carga
-     *
-     */
-
-    private function instanciaPagina(string $instanciaFirma): int{
-      array_push($this->indexARCH["binario"][$this->LyIndexARCH[$ii++]], base64_encode(dechex(filectime($instanciaFirma))));
-      array_push($this->indexARCH["binario"][$this->LyIndexARCH[$ii++]], base64_encode(dechex(fileatime($instanciaFirma))));
-      array_push($this->indexARCH["binario"][$this->LyIndexARCH[$ii++]], base64_encode(getmyinode()));
-      array_push($this->indexARCH["binario"][$this->LyIndexARCH[$ii++]], base64_encode(dechex(fileinode($instanciaFirma))));
-      array_push($this->indexARCH["binario"][$this->LyIndexARCH[$ii++]], base64_encode(dechex(filegroup($instanciaFirma))));
-      array_push($this->indexARCH["binario"][$this->LyIndexARCH[$ii++]], base64_encode(dechex(fileowner($instanciaFirma))));
-      array_push($this->indexARCH["binario"][$this->LyIndexARCH[$ii++]], base64_encode("David Salado Rodriguez"));
-      array_push($this->indexARCH["binario"][$this->LyIndexARCH[$ii--]], base64_encode(implode("", $this->indexARCH["hash"])));
-
-      array_push($this->indexARCH["hash"][$this->LyIndexARCH[$ii--]], base64_encode(password_hash(dechex(filectime($instanciaFirma)), PASSWORD_BCRYPT, $opciones)));
-      array_push($this->indexARCH["hash"][$this->LyIndexARCH[$ii--]], base64_encode(password_hash(dechex(fileatime($instanciaFirma)), PASSWORD_BCRYPT, $opciones)));
-      array_push($this->indexARCH["hash"][$this->LyIndexARCH[$ii--]], base64_encode(password_hash(getmyinode())));
-      array_push($this->indexARCH["hash"][$this->LyIndexARCH[$ii--]], base64_encode(password_hash(dechex(fileinode($instanciaFirma)), PASSWORD_BCRYPT, $opciones)));
-      array_push($this->indexARCH["hash"][$this->LyIndexARCH[$ii--]], base64_encode(password_hash(dechex(filegroup($instanciaFirma)), PASSWORD_BCRYPT, $opciones)));
-      array_push($this->indexARCH["hash"][$this->LyIndexARCH[$ii--]], base64_encode(password_hash(dechex(fileowner($instanciaFirma)), PASSWORD_BCRYPT, $opciones)));
-      array_push($this->indexARCH["hash"][$this->LyIndexARCH[$ii--]], base64_encode(password_hash("David Salado Rodriguez", PASSWORD_BCRYPT, $opciones)));
-      array_push($this->indexARCH["hshOne"][$this->LyIndexARCH[$ii--]], base64_encode(password_hash(implode("", $this->indexARCH["hash"]), PASSWORD_BCRYPT, $opciones)));
-
-      return -1;
-    }
-
-    public function establecePagina(string $ruta): bool{
-      if(in_array($ruta, $this->indexARCH)){
-        return true;
-      }
-      echo "<pre>";
-      print_r($this->indexARCH);
-      echo "</pre>";
-      //array_push($this->indexARCH, $ruta);
-    }
-  }
-
-
-require_once(BASE_PATH . ADMIN_PATH . "/rootsysBD.php");
-
-class salidaFinVista{
-
-  public array $salidaFinHTML;
-  private array $esqueletoHTML;
-  private array $index;
-  private array $error;
-  private array $salidaSQL;
-
-  function __construct(){
-    $this->salidaFinHTML=array();
-    $this->esqueletoHTML=array();
-    $this->index=array();
-    $this->error=array();
-    $this->salidaSQL=array();
-  }
-
-  /**
-   * Pantalla de inicio o error
-   *
-   * $opcion - string
-   *
-   * Valores admitidos:
-   *  1.- "index"
-   *  2.- "error"
-   */
-
-  public function salidaVista($opcion): array{
     try{
-      if($opcion==""){
-        throw new Exception();
-      }
-    }catch(Exception $e){
-      $salida=array();
-      array_push($salida, false);
-      array_push($salida, "abortar");
-      return $salida;
-    }
-    define("INDEX", 0);
-    define("ERROR", 1);
-    estructuraHTML();
-    try{
-      if($opcion=="index"){
-        indexHTML();
-      }else if($opcion=="error"){
-        errorHTML();
-      }
-    }catch(Exception $e){
-
-    }
-    array_push($salida, true);
-    array_push($salida, implode("", $this->salidaFinHTML));
-    return $salida;
-  }
-
-
-  /**
-   * Carga datos del esqueleto html
-   *
-   */
-
-  private function estructuraHTML(){
-    if(!file_exists("/mydata/app/esqueleto.php")){
-      echo "Error en ".__FILE__." Linea: ".__LINE__;
-      exit;
-    }
-    require_once("/mydata/app/esqueleto.php");
-
-  }
-
-/**
- * Carga datos de la plantilla de error en html
- *
- */
-
-  private function errorHTML(){
-    if(!file_exists("/mydata/app/error.php")){
-      echo "Error en ".__FILE__." Linea: ".__LINE__;
-      exit;
-    }
-    require_once("/mydata/app/error.php");
-
-  }
-
-  /**
-   * Carga datos de la plantilla de inicio en html
-   *
-   */
-  private function indexHTML(){
-    if(!file_exists("/mydata/app/inicio.php")){
-      echo "Error en ".__FILE__." Linea: ".__LINE__;
-      exit;
-    }
-    require_once("/mydata/app/inicio.php");
-
-  }
-
-  public function salidaSQL(){
-    $salida="";
-    $salida=implode("",$this->salidaSQL);
-    return $salida;
-  }
-  public function salidaError(array $tipoError): array{
-    $salida = array();
-    $backToMain = array();
-    $idStart = array();
-    $addArray=false;
-    if(!$tipoError[0]){
-      array_push($salida, false);
-      array_push($salida, "EF_600");
-      array_push($salida, "Entrada de dato no coherente con lo esperado: ");
-      array_push($salida, "Ruta: ".__FILE__." linea: ".__LINE__);
-      return $salida;
-    }
-    foreach($this->esqueletoHTML as $ivVal => $valEnd){
-      if(substr($valEnd,0,9)=="<flowCode"){
-        if(count($backToMain)>0){
-          $idStart=explode("=>",$backToMain[count($backToMain)-1]);
-        }
-        foreach($this->error as $idVal1 => $valEnd1){
-          if(isset($idStart) && is_array($idStart)){
-            $idStartUp=$idStart[1];
-          }else if(empty($idStartUp)){
-            $idStartUp=0;
-          }
-          if($idStartUp==$idVal1){
-            $addArray=true;
-          }
-          if($addArray){
-            if(substr($valEnd,0,9)=="<flowCode"){
-              array_push($backToMain, $valEnd1);
+        $describeException="";
+        if(ROOT_INDEX != "/srv/vhost/derootty.xyz/home/html/index.php"){
+          define("FLOW_PATH","./Dinamica");
+          try{
+              
+            if(!file_exists(BASE_PATH . FAIL_PATH . "/index.php")){
+                $describeException = "Se deberia generar un archivo de reporte log: " . "Origen: " . __NAMESPACE__ . " => " . __LINE__ . "Error en ruta: " . BASE_PATH . FAIL_PATH . "/index.php";
+                throw new Exception($describeException);
             }
-            array_push($salida, $valEnd1);
+            if(!file_exists(ROOT_INDEX)){
+                $describeException = "Se deberia generar un archivo de reporte log: " . "Origen: " . __NAMESPACE__ . " => " . __LINE__ . "Error en ruta: " . ROOT_INDEX . "/index.php";
+                throw new Exception($describeException);
+            }
+          }catch(Exception $Ex){
+            print $Ex->getMessage();
+            //header("Location: /Dinamica/fallos/EC_4XX/EC_404/index.php?setdata=Pagina_no_Encontrada");
+            exit;
           }
+          require_once BASE_PATH . FAIL_PATH . "/index.php";
+          exit;
         }
-      }else{
-        array_push($salida, $valEnd);
-      }
-      array_push($salida, $valEnd);
+    }catch (Exception $Ex){
+        $describeException = "";
+        echo $Ex->getMessage();
+        exit;
+    }finally{
+        $con_St=get_defined_constants(true);
     }
-  }
-  public function salidaInicio(){
-
-  }
-  public function salidaNavegacion(array $paginaDestino): array{
-    $salida = array();
-    $backToMain = array();
-    $idStart = array();
-    $addArray=false;
-    foreach($paginaDestino as $idVal => $valEnd){
-      if(substr($valEnd,0,9)=="<flowCode"){
-
+    
+    //Definimos el indice general de variables de entorno de usuario
+    try{
+      if(empty($con_St["user"])){
+          $describeException = "Este archivo ".__NAMESPACE__." >> ".__LINE__." No se reconocen las variables de entorno";
+          throw new Exception($describeException);
       }
-        array_push($salida, $valEnd);
+    }catch (Exception $Ex){
+        $describeException="";
+        echo $Ex->getMessage();
+        exit;
+    }finally{
+        define("CONST_USR", $con_St["user"]);
+        unset($con_St);
     }
-    return $salida;
-  }
-}
+            
+    try{
+        if(CONST_USR < 1){
+            $describeException="";
+            throw new Exception($describeException);
+        }
+        /**
+         * Resolutor de rutas absolutas
+         * 
+         * @param array $ixUsr conteneedor de la matriz constante CONST_USR
+         * @param string $match1 BASE_PATH o la localizacion en ruta absoluta del archico en el servidor.
+         * @param string $match2 ruta relativa o URI del arcuivo
+         * @param string $catalogo nombre final del archivo
+         * @return string salida de la ruta absoluta
+         */
+        function montaRuta(array $ixUsr,string $match1,string $match2,string $catalogo): string{
+            $ruta1="";
+            $ruta2="";
+            $rutaRequerida="";
+            foreach($ixUsr as $idVal => $valEnd){
+                if($idVal == $match2){
+                    $ruta2=$valEnd;
+                }
+                if($idVal == $match1){
+                    $ruta1=$valEnd;
+                }
+            }    
+            $rutaRequerida=$ruta1.$ruta2.$catalogo;
+            if(!file_exists($rutaRequerida)){
+                throw new Exception("Error en localizacion del archivo en funcio montaRuta()".__NAMESPACE__." ".__LINE__);
+            }
+            return $rutaRequerida;
+        }
+    
+    }catch (Exception $ex){
+        echo $ex->getMessage();
+        $describeException="";
+        exit;
+    }finally{
+        $requerido= montaRuta(CONST_USR, "BASE_PATH", "INDEX_PATH", "/box_00.php");
+        try{
+            $describeException="";
+            if(!file_exists($requerido)){
+                $describeException="No se ha instanciado el archivo " . $requerido;
+                throw new Exception($describeException);
+            }
+        } catch (Exception $ex) {
+            $describeException="";
+            echo $Ex->getMessage();
+            exit;
+        }finally{
+            require_once($requerido);
 
-$renderVista = new salidaFinVista();
+        }
+        try{
+            $requerido= montaRuta(CONST_USR, "BASE_PATH", "ADMIN_PATH", "/rootsysBD.php");
+            $describeException="";
+            if(!file_exists($requerido)){
+                $describeException="No se ha instanciado el archivo " . $requerido;
+                throw new Exception($describeException);
+            }
+        } catch (Exception $ex) {
+            $describeException="";
+            echo $Ex->getMessage();
+            exit;
+        } finally {
+            require_once($requerido);
+
+        }
+        try{
+            $requerido= montaRuta(CONST_USR, "BASE_PATH", "INDEX_PATH", "/box_01.php");
+            $describeException="";
+            if(!file_exists($requerido)){
+                $describeException="No se ha instanciado el archivo " . $requerido;
+                throw new Exception($describeException);
+            }
+        } catch (Exception $ex) {
+            $describeException="";
+            echo $Ex->getMessage();
+            exit;
+        }finally{
+            require_once ($requerido);
+        }
+    }    
+    use box_00;
+    use rootsysBD;
+    use box_01;
+//    use practicasAPP\salidaFinVista;
+    
+$renderVista = new box_01\salidaFinVista();
 
 echo "El ciclo de chequeo de errores esta casi acabado. Actualmente el sistema me reporta un error 500. Me uqeda el renderizado del resultado";
-/*
-if(!file_exists("insert.sql")){
-  try{
-    $archivo=$renderVista->salidaSQL();
-    $archivar=$archivo;
-    $vuelca=file_put_contents("insert.sql", $archivar, LOCK_EX);
-    if(!$vuelca){
-      throw new Exception("Error al escribir sql");
-    }
-  }catch(Exception $e){
-    print "Excepcion capturada: " . $e->getMessage();
-  }
-}else{
-  $borrar = unlink("insert.sql");
-  if($borrar){
-    try{
-      $archivo=$renderVista->salidaSQL();
-      $vuelca=file_put_contents("insert.sql", $archivo, LOCK_EX);
-      if(!$vuelca){
-        throw new Exception("Error al escribir sql");
-      }
-    }catch(Exception $e){
-      print "Excepcion capturada: " . $e->getMessage();
-    }
-    print "El archivo se ha borrado y se ha creado de nuevas <br>\n";
-  }
-}
- * 
- */

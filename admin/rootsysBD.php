@@ -1,4 +1,6 @@
 <?php declare(strict_types=1);
+    namespace rootsysBD;
+    //use Exception;
     /*
         header("Content-type: text/css");
         header("Location:http://www.example.com/");
@@ -16,21 +18,12 @@
     */
     //namespace practicasAPP\hhhhh;
 
-    define("CON_ST", get_defined_constants(true));
-    try{
-      if(empty(CON_ST["user"])){
-          throw new Exception("Este archivo ".__FILE__." >> ".__LINE__." No se reconocen las variables de entorno");
-      }
-    }catch (Exception $e){
-        echo $e->getMessage();
-        exit;
-    }finally{
-        define("CONST_USR", CON_ST["user"]);
-    }
-    
     //Nos aseguramos de que tenemos acceso a la ejecucion del flujo logico del controlador
     try{
-        if(count(CONST_USR) != 8 ){
+        if(!defined("CONST_USR")){
+            throw new Exception("El archivo al que estas invocabdo, ".__NAMESPACE__." >> ".__LINE__." no hereda los permisos de ejecucion en 8");
+        }
+        if(count(CONST_USR) < 1 ){
             throw new Exception("El archivo al que estas invocabdo, ".__NAMESPACE__." >> ".__LINE__." no hereda los permisos de ejecucion en 8");
         }
         foreach(CONST_USR as $idVal => $valEnd){
@@ -54,8 +47,11 @@ echo "</pre>";
 exit;
  * 
  */
-//Cargamos los fundamentos del flujo
-require_once BASE_PATH . FLOW_PATH . "/index.php";
+    use practicasAPP;
+    $incluir = practicasAPP\montaRuta(CONST_USR, "BASE_PATH", "FLOW_PATH", "/index.php");
+    require_once($incluir);
+    
+//Cargamos los fundamentos del flujo: Evaluamos error no error
 
 class cargaAdmin{
     public array $adminBD = array();
@@ -69,7 +65,7 @@ class cargaAdmin{
         $dbname = "";
         $this->adminBD[$ejercicio[0]][]=array(
             "local" => $servername,
-            "remoto" => "sldn296.piensasolutions.com"
+            "remoto" => "%*%"
         );
         $this->adminBD[$ejercicio[0]][]=$username;
         $this->adminBD[$ejercicio[0]][]=$password;
@@ -81,7 +77,7 @@ class cargaAdmin{
         $dbname = "";
         $this->adminBD[$ejercicio[1]][]=array(
             "local" => $servername,
-            "remoto" => "sldn296.piensasolutions.com"
+            "remoto" => "%*%"
         );
         $this->adminBD[$ejercicio[1]][]=$username;
         $this->adminBD[$ejercicio[1]][]=$password;
@@ -106,7 +102,7 @@ class cargaAdmin{
         $salida=array();
         try{
             if(is_array($this->adminBD && empty($this->adminBD)) ){
-                throw new Exception("Datos de conexion en mal estado ".__FILE__." Linea: ".__LINE__);
+                throw new Exception("Datos de conexion en mal estado ".__NAMESPACE__." Linea: ".__LINE__);
             }else{
                 array_push($salida, true);
                 array_push($salida, "Los datos de conexion estan preparados para ser lanzados<br>\n");
@@ -120,4 +116,6 @@ class cargaAdmin{
     }
 }
     $conn = mysqli_init();
-    require_once BASE_PATH . ADMIN_PATH . "/conexion.php";
+    $incluir = practicasAPP\montaRuta(CONST_USR, "BASE_PATH", "ADMIN_PATH", "/conexion.php");
+    require_once($incluir);
+    //require_once BASE_PATH . ADMIN_PATH . "/conexion.php";

@@ -1,13 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
+    namespace indexes;
 /* 
- * /admin/index.php
- * 
- * 
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 
     try{
-        if(count(CONST_USR) < 1 ){
+        if(count(CONST_USR) == 0 ){
             throw new Exception("El archivo al que estas invocabdo, ".__NAMESPACE__." >> ".__LINE__." no hereda los permisos de ejecucion en 8");
         }
         foreach(CONST_USR as $idVal => $valEnd){
@@ -23,5 +24,3 @@
         echo $e->getMessage();
         exit;
     } 
-
-    namespace admin;

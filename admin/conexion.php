@@ -1,20 +1,32 @@
 <?php declare(strict_types=1);
-try{
-    //verificamos que el entorno es el adecuado
-  if(!defined("ENV_PATH") || !defined("FAIL_PATH") || !defined("SECURITY_PATH") || !defined("FLOW_PATH") || !defined("ADMIN_PATH") || !defined("ASSET_PATH") || !defined("ROOT_INDEX"))
-  {
-      throw new Exception("Este archivo ".__FILE__." >> ".__LINE__." no hereda los permisos de ejecucion");
-  }
-} catch (Exception $e){
-    echo $e->getMessage();
-    exit;
-}  
+    namespace conexion;
+    use Exception;
+    //Nos aseguramos de que tenemos acceso a la ejecucion del flujo logico del controlador
+    try{
+        if(count(CONST_USR) < 1 ){
+            throw new Exception("El archivo al que estas invocabdo, ".__NAMESPACE__." >> ".__LINE__." no hereda los permisos de ejecucion en 8");
+        }
+        foreach(CONST_USR as $idVal => $valEnd){
+            if((BASE_PATH != $valEnd) && (ROOT_INDEX != $valEnd) ){
+                if(!file_exists(BASE_PATH . $valEnd."/index.php")){
+                    throw new Exception("Este archivo ". BASE_PATH . $valEnd."/index.php || ".  __NAMESPACE__." >> ".__LINE__." no hereda los permisos de ejecucion");
+                }
+            }
+            //echo $idVal." => ".$valEnd."<br>\n";
+        }
+        //verificamos que el entorno es el adecuado
+    } catch (Exception $e){
+        echo $e->getMessage();
+        exit;
+    } 
 
 /*
     $ejercicio=array();
     $queEjercicio=0;
     $queBD=$ejercicio[$queEjercicio];
 */
+
+    
     class conexion{
         private string $servername;
         private string $username;
@@ -81,31 +93,23 @@ try{
         }
     }
     //require_once "admin/rootsysBD.php";
-    $bdConect=new cargaAdmin();
+    use rootsysBD;
+    $bdConect = new rootsysBD\cargaAdmin();
     $queBD=2;
     $setData=array();
     try{
         $setData=$bdConect->dameDatos();
         if(!$setData[0]){
             throw new Exception($setData[1] . " Interrupcion en ".__LINE__." ruta ".__FILE__);
-        }else{
-            $adminCrud=new conexion($setData, $queBD);
-            $booConn=$adminCrud->verificaConn($conn);
-            $dinamicaAPP=new dinamicaAPP();
-            $ruta=$dinamicaAPP->dinamica($booConn);
-            /*
-            echo "<pre>";
-            print_r($booConn);
-            echo "</pre>";
-            exit;
-            */
-            if(!file_exists($ruta)){
-                echo $ruta;
-                exit;
-                throw new Exception("REvisa ruta: ".$ruta);
-            }
-            header('Location: '.$ruta.'?setDat1a='.$booConn[1]);
         }
+        /*
+        echo "<pre>";
+        print_r($booConn);
+        echo "</pre>";
+        exit;
+        */
+
+            //header('Location: '.$ruta.'?setDat1a='.$booConn[1]);
     }catch(Exception $e){
         if(!$setData[0]){
             header('Location: /Dinamica/fallos/index.php?setData='.$e->getMessage());
@@ -115,6 +119,19 @@ try{
         echo "Se deberia estar creando 1 archivo de registro para este error: ".$e->getMessage()."<br>\n";
         exit;
     }
+    
+    $adminCrud = new conexion($setData, $queBD);
+    $booConn = $adminCrud->verificaConn($conn);
+    use dinamica;
+    $dinamicaAPP = new dinamica\dinamicaAPP();
+    $ruta=$dinamicaAPP->dinamica($booConn);
+    if(!file_exists(BASE_PATH . $ruta)){
+        echo $ruta;
+        exit;
+        throw new Exception("REvisa ruta: ".$ruta);
+    }
+    
+    
     function lanzaConexion(&$adminCrud,&$conn){
         $salida=array();
         $salida = $adminCrud->verificaConn($conn);

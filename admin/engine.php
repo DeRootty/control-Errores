@@ -1,5 +1,7 @@
 <?php declare(strict_types=1);
 
+namespace engine;
+
 $calculaAmz=array();
 $calculaAmz=explode(".",$esteArchivo);
 $amzResult=$calculaAmz[0].".amz";
