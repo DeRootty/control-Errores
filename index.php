@@ -31,6 +31,7 @@
   define("ADMIN_PATH", "/admin");                               //Condiciones de respuesta al cleinte, si se cumplen, el flujo trazara hacia el Entorno, sino, hacia el fallo
   define("ASSET_PATH", "/assets");                              //Se cargan los elementos externos y las dependencias de terceros.
   define("INDEX_PATH", "/indexes");                             //Se accede a los modulos de carga para el arranque de index.php
+  define("RENDER_PATH", "/mydata/app");
   define("ROOT_INDEX", __FILE__);                               //Privilegios con los que se marca el flujo.
 
 
@@ -170,7 +171,17 @@
     use rootsysBD;
     use box_01;
 //    use practicasAPP\salidaFinVista;
-    
 $renderVista = new box_01\salidaFinVista();
+$SalidaHTML=array();    
+$SalidaHTML=$renderVista->salida_HTML_final($booConn);
+//echo "registros integrados de la pagina: ".count($SalidaHTML)."<br>\n";
+//echo $SalidaHTML."<br>\n";
+    if(!file_exists(BASE_PATH . $ruta)){
+        echo $ruta;
+        exit;
+    }
 
-echo "El ciclo de chequeo de errores esta casi acabado. Actualmente el sistema me reporta un error 500. Me uqeda el renderizado del resultado";
+    foreach($SalidaHTML as $idVal => $valEnd){
+        echo $valEnd;
+    } 
+//echo "El ciclo de chequeo de errores esta casi acabado. Actualmente el sistema me reporta la llamada a un archivo de error ".BASE_PATH . $ruta.". Me uqeda el renderizado del resultado";
