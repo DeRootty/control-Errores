@@ -1,0 +1,26 @@
+<!DOCTYPE html>|
+<html lang="es">|
+    <head>|
+        <meta charset="UTF-8">|
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">|
+        <title>Lista de alumnos</title>|
+    </head>|
+    <body>|
+        <h1>Lista de alumnos</h1>|
+        <table>|
+            <tr>|
+                <th>|
+                    Nombre|
+                </th>|
+                <th>|
+                    Apellido|
+                </th>|
+                <th>|
+                    DNI|
+                </th>|
+            </tr>|
+            <php>
+            </php>
+        </table>|
+    </body>|
+</html>|
