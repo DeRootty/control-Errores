@@ -193,6 +193,7 @@ namespace dinamica;
                     throw new Exception("");
                 }
             }catch(Exception $e){
+                /*
                 trigger_error();
                 debug_​backtrace();
                 debug_​print_​backtrace();
@@ -206,6 +207,8 @@ namespace dinamica;
                 set_​exception_​handler();
                 trigger_​error();
                 user_​error();
+                 * 
+                 */
             }
             $analisis=array();
             if(!$ixEvalua[0]){
@@ -213,9 +216,9 @@ namespace dinamica;
                     unset($analisis);
                     $analisis=array();
                     $analisis[]=explode("_",$idVal);
-                    $analisis[]=explode("_",$ixEvalua[1]);
+                    $analisis[]=explode("_",$ixEvalua[2]);
                     if($analisis[0][0]==$analisis[1][0]){
-                        $ruta="/Dinamica/fallos/".$idVal."/".$ixEvalua[1]."/index.php";
+                        $ruta="/Dinamica/fallos/".$idVal."/".$ixEvalua[2]."/index.php";
                     }
                 }
                 //$this->dinamica["fallos"][$ixEvalua];

@@ -1,32 +1,18 @@
 <?php declare(strict_types=1);
 
-if(empty($_POST) || (!isset($_POST["dinamica"]) && !isset($_POST["leyenda"]))){
-    header("Location: /Dinamica/fallos/EC_4XX/EC_404/index.php?setdata=Pagina_no_Encontrada");
-}
-session_start();
+    if(!isset($this->error) && empty($montar)){
+        echo "Error fatal, si el error tuviese un error, este es el siguiente nivel<br>\n";
+        exit;
+        header("Location: /Dinamica/fallos/EC_4XX/EC_404/index.php?setdata=Pagina_no_Encontrada");
+    }
 
-// Obtener datos de usuario
-$queFallo = $_POST['queFallo'];
-$argumento = $_POST['leyenda'];
-
-// Validar usuario (ejemplo simplificado, usar una base de datos en la vida real)
-if ($queFallo === 'usuario' && $argumento === 'argumento') {
-  // Asignar variables de sesión
-  $_SESSION['nombre'] = $queFallo;
-  $_SESSION['rol'] = 'usuario';
-
-  // Registrar datos de navegación
-  $_SESSION['ultimaVisita'] = time();
-  $_SESSION['ip'] = $_SERVER['REMOTE_ADDR'];
-  $_SESSION['navegador'] = $_SERVER['HTTP_USER_AGENT'];
-
-  // Redirigir a la página principal
-  header('Location: principal.php');
-  exit;
-} else {
-  // Mostrar mensaje de error
-  echo '<p>Usuario o contraseña incorrectos.</p>';
-}
-
-
-$_POST[]="";
+    array_push($this->error, "                <div class='"."text-center"."'>\n");
+    array_push($this->error, "                  <h2 class='"."d-flex justify-content-center align-items-center gap-2 mb-4"."'>\n");
+    array_push($this->error, "                    <span class='"."display-1 fw-bold"."'>".$montar[1]."</span>\n");
+    array_push($this->error, "                    <i class='bi bi-exclamation-circle-fill text-danger display-4'></i>\n");
+    array_push($this->error, "                    <span class='"."display-1 fw-bold bsb-flip-h"."'>".$montar[2]."</span>\n");
+    array_push($this->error, "                  </h2>\n");
+    array_push($this->error, "                  <h3 class='"."h2 mb-2'".">".$montar[4]."</h3>\n");
+    array_push($this->error, "                  <p class='"."mb-5"."'>"."La pagina que has solicitado esta en desarrollo desde el backend, aun le queda tiempo hasta llegar al frontend. Pero si quieres que esto vaya rapido, necesito ayuda en el frontend"."</p>\n");
+    array_push($this->error, "                  <a class='"."btn bsb-btn-5xl btn-dark rounded-pill px-5 fs-6 m-0"."' href='"."#!"."' role='"."button"."'>"."Mas info aqui"."</a>\n");
+    array_push($this->error, "                </div>\n");

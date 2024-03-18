@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Clase que marca al cliente como unico, sin necesidad de conocer sus datos reales de identidad.

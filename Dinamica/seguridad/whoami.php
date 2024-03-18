@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
     //extrae el directorio inmediatamente precedente al archivo de script.
     //Recibe la ruta completa
     class queScript{
