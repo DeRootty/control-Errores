@@ -7,22 +7,15 @@ namespace box_01;
  */
 
     try{
-        if(count(CONST_USR) == 0 ){
-            throw new Exception("El archivo al que estas invocabdo, ".__NAMESPACE__." >> ".__LINE__." no hereda los permisos de ejecucion en 8");
+        if(!file_exists("/srv/vhost/derootty.xyz/home/html/Dinamica/seguridad/ahead.php")){
+            throw new Exception("Fallo en el fundamento inherente a la seguridad. El archivo ".__FILE__." Viola el acceso al recurso");
         }
-        foreach(CONST_USR as $idVal => $valEnd){
-            if((BASE_PATH != $valEnd) && (ROOT_INDEX != $valEnd) ){
-                if(!file_exists(BASE_PATH . $valEnd."/index.php")){
-                    throw new Exception("Este archivo ". BASE_PATH . $valEnd."/index.php || ".  __NAMESPACE__." >> ".__LINE__." no hereda los permisos de ejecucion");
-                }
-            }
-            //echo $idVal." => ".$valEnd."<br>\n";
-        }
-        //verificamos que el entorno es el adecuado
-    } catch (Exception $e){
-        echo $e->getMessage();
+    } catch (Exception $ex) {
+        echo $ex->getMessage();
         exit;
-    } 
+    }finally{
+        include ("/srv/vhost/derootty.xyz/home/html/Dinamica/seguridad/ahead.php");
+    }
    
 class salidaFinVista{
 
@@ -31,13 +24,15 @@ class salidaFinVista{
   private array $index;
   private array $error;
   private array $salidaSQL;
+  private bool $modoTest;
 
-  function __construct(){
+  function __construct(bool $depuracion){
     $this->salidaFinHTML=array();
     $this->esqueletoHTML=array();
     $this->index=array();
     $this->error=array();
     $this->salidaSQL=array();
+    $this->modoTest=$depuracion;
   }
 
   /**
@@ -49,88 +44,291 @@ class salidaFinVista{
    *  1.- "index"
    *  2.- "error"
    */
-
-  public function salidaVista($opcion): array{
-    try{
-      if($opcion==""){
-        throw new Exception();
-      }
-    }catch(Exception $e){
-      $salida=array();
-      array_push($salida, false);
-      array_push($salida, "abortar");
-      return $salida;
+    public function modoDev(bool $test): array{
+        $this->modoTest=$test;
+        return $salida;
     }
-    define("INDEX", 0);
-    define("ERROR", 1);
-    estructuraHTML();
-    try{
-      if($opcion=="index"){
-        indexHTML();
-      }else if($opcion=="error"){
-        errorHTML();
-      }
-    }catch(Exception $e){
+
+    /**
+     * 
+     * @param array $secuencia= array(
+     *                                  0 => true o false,
+     *                                  1 => contexto (index, error, solicitud),
+     *                                  1 => BASE_PATH,
+     *                                  2 => HOME_PATH,
+     *                                  3 => archivo.php
+     *                                )
+     *                                  
+     * @return string
+     */
+    private function engineRender(array $secuencia): string{
 
     }
-    array_push($salida, true);
-    array_push($salida, implode("", $this->salidaFinHTML));
-    return $salida;
-  }
 
-
-  /**
-   * Carga datos del esqueleto html
-   *
-   */
-
-  private function estructuraHTML(){
-    if(!file_exists("/mydata/app/esqueleto.php")){
-      echo "Error en ".__FILE__." Linea: ".__LINE__;
-      exit;
+    private function runIxDos($matriz2, &$contenedor){
+        foreach ($this->esqueletoHTML as $valor) {
+            if (strpos($valor, "stop") !== false) {
+                break;
+            }
+            $contenedor .= $valor . " ";
+        }
     }
-    if(!file_exists("/mydata/app/esqueleto.php")){
-        echo "Ruta inexistente: ".__FILE__.__LINE__;
-        
-    }
-    require_once("/mydata/app/esqueleto.php");
-
-  }
-
+    
+    
 /**
- * Carga datos de la plantilla de error en html
- *
+ * 
+ * @param array $montar Array que pasa la coleccion a plantear en el render
+ * @param bool $check pasamos true o false en funcion de si queremos hacer un test de los archivos incluidos en mydata
+ * @return array
+ * @throws Exception
+ * 
  */
-
-  private function errorHTML(){
-    if(!file_exists("/mydata/app/error.php")){
-      echo "Error en ".__FILE__." Linea: ".__LINE__;
-      exit;
+    private function estructuraHTML(array $montar, bool $check): array{
+        $salida=array();
+        if($check){
+            if(!empty($this->modoTest)){
+                if($this->modoTest){
+                    echo "Modo check en true para estructura<br>\n";
+                    array_push($salida, true);
+                    array_push($salida, "estructuraHTML");
+                    array_push($salida, "Se inicia peticion de alcance en modo||depuracion");
+                    return $salida;
+                } else {
+                    echo "Modo check en false para estructura<br>\n";
+                    array_push($salida, false);
+                    array_push($salida, "estructuraHTML");
+                    array_push($salida, "Se inicia peticion de alcance en modo||render");
+                    return $salida;
+                }
+            }
+        }
+        $addInsert="";
+        if(!file_exists(BASE_PATH . RENDER_PATH . "/esqueleto.php")){
+            array_push($salida, "Ruta inexistente: ".__FILE__.__LINE__);
+            exit;
+        }
+        try{
+            if($this->modoTest){
+                echo "Modo test en true para estructura<br>\n";
+                if(count($salida)==0){
+                    array_push($salida, true);
+                }
+                if((count($this->esqueletoHTML)==0) && (count($this->salidaFinHTML)==0)){
+                    require_once(BASE_PATH . RENDER_PATH . "/esqueleto.php");
+                    array_push($salida, "entrada a extructura<br>\n");
+                    echo "entrada a extructura<br>\n";
+                }else if(count($this->esqueletoHTML)==0 && count($this->salidaFinHTML)>0 ){
+                    array_push($salida, "reentrada a estructura<br>\n");
+                    echo "reentrada a estructura<br>\n";
+                }else if(count($this->esqueletoHTML)>0 && count($this->salidaFinHTML)>0 ){
+                    array_push($salida, "definicion por controlar en estructura<br>\n");
+                    echo "definicion por controlar en estructura<br>\n";
+                }else{
+                    throw new Exception("Excepcion no controlada");
+                }
+            }else{
+                echo "Modo test en false para estructura<br>\n";
+                if(count($salida)==0){
+                    array_push($salida, false);
+                }
+                if((count($this->esqueletoHTML)==0) && (count($this->salidaFinHTML)==0)){
+                    require_once(BASE_PATH . RENDER_PATH . "/esqueleto.php");
+                }else if(count($this->esqueletoHTML)==0 && count($this->salidaFinHTML)>0 ){
+                    
+                }else if(count($this->esqueletoHTML)>0 && count($this->salidaFinHTML)>0 ){
+                    
+                }else{
+                    throw new Exception("Excepcion no controlada");
+                }                
+            }
+        } catch (Exception $ex){
+            echo $ex->getMessage();
+            exit;
+        }
+        $ii=-1;
+        $ii=count($this->esqueletoHTML);
+        while($ii>0){
+            $addInsert="";
+            if (strpos($this->esqueletoHTML[0], "<flowCode||value=>>'index|error'||position=>") !== false) {
+                // Encontramos un marcador, llamamos a la función para la matriz 2
+                //Discriminamos si estamos depurando la inclusion de nuevas estructuras en mydata
+                if($this->modoTest){
+                    //
+                    if(!$montar[0] && $montar[5]){
+                        array_push($salida, "estructura detecta error en ".$ii." <br>\n");
+                        array_push($salida, $this->errorHTML($montar,true));
+                        echo "estructura detecta error en ".$ii." <br>\n";
+                    }else{
+                        array_push($salida, "estructura detecta entrada a index en ".$ii." <br>\n");
+                        array_push($salida, $this->inicioHTML($montar,true));
+                        echo "estructura detecta entrada a index en ".$ii." <br>\n";
+                    }
+                }else{
+                    if(!$montar[0] && $montar[5]){
+                        $this->errorHTML($montar, false);
+                    }else{
+                        $this->inicioHTML($montar, false);
+                    }
+                }
+                array_shift($this->esqueletoHTML);
+                $ii=count($this->esqueletoHTML);
+            } else {
+                $addInsert=array_shift($this->esqueletoHTML);
+                array_push($this->salidaFinHTML, $addInsert);
+            }
+            $ii=count($this->esqueletoHTML);
+            if($this->modoTest){
+                array_push($salida, "estructura ".$ii." <br>\n");
+            }
+        }
+        if($this->modoTest){
+            return $salida;
+        }else{
+            return $this->salidaFinHTML;
+        }
     }
-    if(!file_exists("/mydata/app/error.php")){
-        echo "Ruta inexistente: ".__FILE__.__LINE__;
-        
-    }
-    require_once("/mydata/app/error.php");
 
-  }
+    /**
+     * Carga datos de la plantilla de error en html
+     *
+     */
+    private function errorHTML(array $montar, bool $check): array{
+        $salida=array();
+        if($check){
+            if(!empty($this->modoTest)){
+                if($this->modoTest){
+                    array_push($salida, true);
+                    array_push($salida, "errorHTML");
+                    array_push($salida, "Se inicia peticion de alcance en modo||depuracion");
+                    return $salida;
+                } else {
+                    array_push($salida, false);
+                    array_push($salida, "errorHTML");
+                    array_push($salida, "Se inicia peticion de alcance en modo||render");
+                    return $salida;
+                }
+            }
+        }
+        $addInsert="";
+        if(!file_exists(BASE_PATH . RENDER_PATH . "/error.php")){
+          array_push($salida, "Error en ".__FILE__." Linea: ".__LINE__);
+          return $salida;
+        }
+        try{
+            if($this->modoTest){
+                echo "Modo test en true<br>\n";
+                if(count($this->error)==0 && count($this->salidaFinHTML)>0 ){
+                    require_once(BASE_PATH . RENDER_PATH . "/error.php");
+                    array_push($salida, "entrada a error<br>\n");
+                }else if(count($this->error)==0 && count($this->salidaFinHTML)>0 ){
+                    array_push($salida, "reentrada a error<br>\n");
+                }else if(count($this->error)>0 && count($this->salidaFinHTML)>0 ){
+                    array_push($salida, "definicion por controlar en error<br>\n");
+                }else{
+                    throw new Exception("Error en asignacion de matrices");
+                    exit;
+                }
+            }else{
+                echo "Modo test en false<br>\n";
+                if(count($this->error)==0 && count($this->salidaFinHTML)>0 ){
+                    require_once(BASE_PATH . RENDER_PATH . "/error.php");
+                }else if(count($this->error)==0 && count($this->salidaFinHTML)>0 ){
+
+                }else if(count($this->error)>0 && count($this->salidaFinHTML)>0 ){
+
+                }else{
+                    throw new Exception("Error en asignacion de matrices");
+                    exit;
+                }
+            }
+        } catch (Exception $ex){
+            echo $ex->getMessage();
+            exit;
+        }
+        $ii=-1;
+        $ii=count($this->error);
+        while($ii>0){
+            if (strpos($this->error[0], "<flowCode||value=>>'main'||position=>") !== false) {
+                if($this->modoTest){
+                    array_shift($this->error);
+                    $ii=count($this->error);
+                    array_push($salida, "error ".$ii." salida"." <br>\n");
+                    break;
+                }else{
+                    array_shift($this->error);
+                    $ii=count($this->error);
+                    break;
+                }
+            }
+            
+            $addInsert=array_shift($this->error);
+            array_push($this->salidaFinHTML, $addInsert);
+            $ii=count($this->error);
+            array_push($salida, "error ".$ii." <br>\n");
+        }
+        if($this->modoTest){
+            return $salida;
+        }
+    }
 
   /**
    * Carga datos de la plantilla de inicio en html
    *
    */
-  private function indexHTML(){
-    if(!file_exists("/mydata/app/inicio.php")){
-      echo "Error en ".__FILE__." Linea: ".__LINE__;
-      exit;
-    }
-    if(!file_exists("/mydata/app/inicio.php")){
-        echo "Ruta inexistente: ".__FILE__.__LINE__;
-        
-    }
-    require_once("/mydata/app/inicio.php");
+    private function inicioHTML(array $montar, bool $check): array{
+        $addInsert="";
+        if(!file_exists(BASE_PATH . RENDER_PATH . "/inicio.php")){
+            echo "Error en ".__FILE__." Linea: ".__LINE__;
+            exit;
+        }
 
-  }
+        $salida=array();
+        if($check){
+            if(!empty($this->modoTest)){
+                if($this->modoTest){
+                    array_push($salida, true);
+                    array_push($salida, "inicioHTML");
+                    array_push($salida, "Se inicia peticion de alcance en modo||depuracion");
+                    return $salida;
+                } else {
+                    array_push($salida, false);
+                    array_push($salida, "inicioHTML");
+                    array_push($salida, "Se inicia peticion de alcance en modo||render");
+                    return $salida;
+                }
+            }
+        }
+    
+        $ii=-1;
+        $ii=count($this->index);
+        while($ii>0){
+            if($this->modoTest){
+                if (strpos($this->index[0], "<flowCode||value=>>'main'||position=>") !== false) {
+                    array_shift($this->index);
+                    $ii=count($this->index);
+                    echo "index ".$ii." salida <br>\n";
+                    break;
+                }
+                $addInsert=array_shift($this->index);
+                array_push($this->salidaFinHTML, $addInsert);
+                $ii=count($this->index);
+                echo "index ".$ii." <br>\n";
+            }else{
+                if (strpos($this->index[0], "<flowCode||value=>>'main'||position=>") !== false) {
+                    array_shift($this->index);
+                    $ii=count($this->index);
+                    break;
+                }
+                $addInsert=array_shift($this->index);
+                array_push($this->salidaFinHTML, $addInsert);
+                $ii=count($this->index);
+            }
+        }
+        if($this->modoTest){
+            return $salida;
+        }
+    
+    }
 
   public function salidaSQL(){
     $salida="";
@@ -143,11 +341,13 @@ class salidaFinVista{
     $idStart = array();
     $addArray=false;
     if(!$tipoError[0]){
-      array_push($salida, false);
-      array_push($salida, "EF_600");
-      array_push($salida, "Entrada de dato no coherente con lo esperado: ");
-      array_push($salida, "Ruta: ".__FILE__." linea: ".__LINE__);
-      return $salida;
+        array_push($salida,false);
+        array_push($salida,"EF_6XX");
+        array_push($salida,"EF_600");
+        array_push($salida,"index.php");
+        array_push($salida,"Entrada de dato no coherente con lo esperado: "."Ruta: ".__FILE__." linea: ".__LINE__);
+        array_push($salida,true);
+        return $salida;
     }
     foreach($this->esqueletoHTML as $ivVal => $valEnd){
       if(substr($valEnd,0,9)=="<flowCode"){
@@ -189,8 +389,13 @@ class salidaFinVista{
    * @return string
    */
   
-  public function salida_HTML_final(array $flujoDin): string{
-      
+  public function salida_HTML_final(array $flujoDin, bool $modoTest): array{
+      $salida=array();
+      $salida=$this->estructuraHTML($flujoDin, $modoTest);
+      if($salida[0]){
+        $salida=$this->estructuraHTML($flujoDin, $modoTest);
+      }
+      //$salida=implode("||", $flujoDin);
       return $salida;
   }
   public function salidaNavegacion(array $paginaDestino): array{
