@@ -1,24 +1,18 @@
 <?php declare(strict_types=1);
     namespace conexion;
     use Exception;
-    //Nos aseguramos de que tenemos acceso a la ejecucion del flujo logico del controlador
     try{
-        if(count(CONST_USR) < 1 ){
-            throw new Exception("El archivo al que estas invocabdo, ".__NAMESPACE__." >> ".__LINE__." no hereda los permisos de ejecucion en 8");
+        if(!file_exists("/srv/vhost/derootty.xyz/home/html/Dinamica/seguridad/ahead.php")){
+            throw new Exception("Fallo en el fundamento inherente a la seguridad. El archivo ".__FILE__." Viola el acceso al recurso");
         }
-        foreach(CONST_USR as $idVal => $valEnd){
-            if((BASE_PATH != $valEnd) && (ROOT_INDEX != $valEnd) ){
-                if(!file_exists(BASE_PATH . $valEnd."/index.php")){
-                    throw new Exception("Este archivo ". BASE_PATH . $valEnd."/index.php || ".  __NAMESPACE__." >> ".__LINE__." no hereda los permisos de ejecucion");
-                }
-            }
-            //echo $idVal." => ".$valEnd."<br>\n";
-        }
-        //verificamos que el entorno es el adecuado
-    } catch (Exception $e){
-        echo $e->getMessage();
+    } catch (Exception $ex) {
+        echo $ex->getMessage();
         exit;
-    } 
+    }finally{
+        include ("/srv/vhost/derootty.xyz/home/html/Dinamica/seguridad/ahead.php");
+    }
+    //Nos aseguramos de que tenemos acceso a la ejecucion del flujo logico del controlador
+
 
 /*
     $ejercicio=array();
@@ -54,7 +48,38 @@
                 $this->statusConn[]="Fallo en la entrada de datos<br>\n";
             }
         }    
-
+        private function conectaBD(){
+            
+        }
+        private function conectaMail(){
+            
+        }
+        private function conectaConfianza(){
+            $randomStr[]=$_SERVER['REMOTE_ADDR'];                                                                                       //2
+            $randomStr[]=$_SERVER['REQUEST_URI'];                                                                                       //3
+            $randomStr[]=str_shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZ");                                                                     //4
+            $randomStr[]=str_shuffle("abcdefghijklmnopqrstuvwxyz");                                                                     //5
+            $randomStr[]=str_shuffle("0123456789");                                                                                     //6
+            $randomStr[]=str_shuffle("_@!+-*();~");                                                                                     //7
+            $randomStr[]=substr($randomStr[4],1,5).substr($randomStr[5],1,5).substr($randomStr[6],1,5).substr($randomStr[7],1,5);       //8
+            $randomStr[0]["val"][]=GenerateRandomString(8,$randomStr[8]);
+            $randomStr[1]["val"][]=GenerateRandomString(8,$randomStr[8]);
+            $inequal=false;
+            //echo "<br>".$randomStr[0]["val"][count($randomStr[0]["val"])-1]."<br>\n";
+            //echo $randomStr[1]["val"][count($randomStr[0]["val"])-1]."<br>\n";
+            //echo $randomStr[8]."<br>\n";
+            //exit;
+            if($randomStr[0]["val"][count($randomStr[0]["val"])-1]==$randomStr[1]["val"][count($randomStr[1]["val"])-1]){
+                do{
+                    if($randomStr[0]["val"][count($randomStr[0]["val"])-1]!==$randomStr[0]["val"][count($randomStr[0]["val"])-2]){
+                        $inequal=true;
+                    }else{
+                        $randomStr[0]["val"][]=GenerateRandomString(8,$randomStr[6]);
+                        $randomStr[1]["val"][]=GenerateRandomString(8,$randomStr[6]);
+                    }
+                }while($inequal);
+            } 
+        }
         /**
          * $conn - pasa por referencia la instancia a MySqli
          */
@@ -80,14 +105,20 @@
                         throw new Exception('Falló la configuración de MYSQLI_OPT_CONNECT_TIMEOUT');
                     }
                 }catch(Exception $e) {
-                    $this->statusConn[]=false;
-                    $this->statusConn[]="ES_500";
-                    $this->statusConn[]=$e->getMessage();
+                    array_push($this->statusConn, false);
+                    array_push($this->statusConn, "ES_5XX");
+                    array_push($this->statusConn, "ES_500");
+                    array_push($this->statusConn, "index.php");
+                    array_push($this->statusConn, $e->getMessage());
+                    array_push($this->statusConn, false);
                     return $this->statusConn;
                 }
-                $this->statusConn[]=true;
-                $this->statusConn[]="PT_103";
-                $this->statusConn[]='Éxito... ' . $conn->host_info . "\n";
+                array_push($this->statusConn, true);
+                array_push($this->statusConn, "PT_1XX");
+                array_push($this->statusConn, "PT_103");
+                array_push($this->statusConn, "index.php");
+                array_push($this->statusConn, 'Éxito... ' . $conn->host_info . "\n");
+                array_push($this->statusConn, true);
             }
             return $this->statusConn;        
         }
@@ -100,15 +131,8 @@
     try{
         $setData=$bdConect->dameDatos();
         if(!$setData[0]){
-            throw new Exception($setData[1] . " Interrupcion en ".__LINE__." ruta ".__FILE__);
+            throw new Exception($setData[1] . " Interrupcion en ".__LINE__." ruta ".__NAMESPACE__);
         }
-        /*
-        echo "<pre>";
-        print_r($booConn);
-        echo "</pre>";
-        exit;
-        */
-
             //header('Location: '.$ruta.'?setDat1a='.$booConn[1]);
     }catch(Exception $e){
         if(!$setData[0]){
@@ -120,8 +144,27 @@
         exit;
     }
     
+    /* 
+     * Se definen tres tipos de conexiones: 
+     * Funcion inception en layer($estado, $nameLayer){
+     *      $Layer[$nameLayer] = array( 
+     *          Cliente - servidor by script, 
+     *          script - servicio to front end,
+     *          Front End - App,
+     *          estado - $estado
+     *      )
+     *  }
+     *  
+     *  throw new inception en layer B.
+     */
     $adminCrud = new conexion($setData, $queBD);
     $booConn = $adminCrud->verificaConn($conn);
+        /*
+        echo "<pre>";
+        print_r($booConn);
+        echo "</pre>";
+        exit;
+        */
     use dinamica;
     $dinamicaAPP = new dinamica\dinamicaAPP();
     $ruta=$dinamicaAPP->dinamica($booConn);
