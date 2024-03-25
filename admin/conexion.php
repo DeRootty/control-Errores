@@ -27,6 +27,7 @@
         private string $password;
         private string $dbname;
         public array $statusConn;
+        private bool $depura;
 
         /**
          * $adminBD - Matriz con los datos de conexion
@@ -35,17 +36,31 @@
          *      2 - password
          *      3 - dbname
          */
-        public function __construct($adminBD,$queBD){
+        public function __construct(array $adminBD, int $queBD, bool $depuracion){
+            $this->statusConn=array(
+                "A"=>array(),
+                "B"=>array(),
+                "C"=>array(),
+                "D"=>array(),
+                "E"=>array()
+            );
+            $this->depura = $depuracion;            
             if(is_array($adminBD)&&count($adminBD)>0){
                 $this->servername = $adminBD[$queBD]["back"][0]["local"];
                 $this->username = $adminBD[$queBD]["back"][1];
                 $this->password = $adminBD[$queBD]["back"][2];
                 $this->dbname = $adminBD[$queBD]["back"][3];
-                $this->statusConn[]=true;
-                $this->statusConn[]="Datos establecidos<br>\n";
+                array_push($this->statusConn["A"], $this->depura);
+                array_push($this->statusConn["B"], "Constructor de clase conexion<br>\n");
+                array_push($this->statusConn["C"], "Datos establecidos desde " . __FILE__ . " en " . __LINE__."<br>\n");
+                array_push($this->statusConn["D"], false);
+                array_push($this->statusConn["E"], false);
             }else{
-                $this->statusConn[]=false;
-                $this->statusConn[]="Fallo en la entrada de datos<br>\n";
+                array_push($this->statusConn["A"], $this->depura);
+                array_push($this->statusConn["B"], "Fallo en la entrada de datos<br>\n");
+                array_push($this->statusConn["C"], "Datos abortados desde " . __FILE__ . " en " . __LINE__."<br>\n");
+                array_push($this->statusConn["D"], false);
+                array_push($this->statusConn["E"], true);
             }
         }    
         private function conectaBD(){
@@ -83,7 +98,7 @@
         /**
          * $conn - pasa por referencia la instancia a MySqli
          */
-        public function verificaConn(&$conn){
+        public function verificaConn(&$conn, bool $check): array{
             if(!$this->statusConn[0]){
                 return $this->statusConn;
             }else{
@@ -105,45 +120,48 @@
                         throw new Exception('Falló la configuración de MYSQLI_OPT_CONNECT_TIMEOUT');
                     }
                 }catch(Exception $e) {
-                    array_push($this->statusConn, false);
-                    array_push($this->statusConn, "ES_5XX");
-                    array_push($this->statusConn, "ES_500");
-                    array_push($this->statusConn, "index.php");
-                    array_push($this->statusConn, $e->getMessage());
-                    array_push($this->statusConn, false);
+                    array_push($this->statusConn["A"], $this->depura);
+                    array_push($this->statusConn["B"], "ES_5XX||ES_500||index.php");
+                    array_push($this->statusConn["C"], array("getMessaje" => $e->getMessage()));
+                    array_push($this->statusConn["D"], $check);
+                    array_push($this->statusConn["E"], false);
                     return $this->statusConn;
                 }
-                array_push($this->statusConn, true);
-                array_push($this->statusConn, "PT_1XX");
-                array_push($this->statusConn, "PT_103");
-                array_push($this->statusConn, "index.php");
-                array_push($this->statusConn, 'Éxito... ' . $conn->host_info . "\n");
-                array_push($this->statusConn, true);
+                array_push($this->statusConn[""], true);
+                array_push($this->statusConn[""], "PT_1XX||PT_103||index.php");
+                array_push($this->statusConn[""], 'Éxito... ' . $conn->host_info . "\n");
+                array_push($this->statusConn[""], $check);
+                array_push($this->statusConn[""], false);
             }
             return $this->statusConn;        
         }
     }
     //require_once "admin/rootsysBD.php";
     use rootsysBD;
-    $bdConect = new rootsysBD\cargaAdmin();
+    $bdConect = new rootsysBD\cargaAdmin(true);
     $queBD=2;
     $setData=array();
     try{
-        $setData=$bdConect->dameDatos();
-        if(!$setData[0]){
-            throw new Exception($setData[1] . " Interrupcion en ".__LINE__." ruta ".__NAMESPACE__);
+        $setData=$bdConect->dameDatos(true);
+        if(!$setData["E"][0]){
+            throw new Exception($setData);
         }
             //header('Location: '.$ruta.'?setDat1a='.$booConn[1]);
     }catch(Exception $e){
-        if(!$setData[0]){
-            header('Location: /Dinamica/fallos/index.php?setData='.$e->getMessage());
-        }else if(!$booCon[0]){
-            header('Location: /Dinamica/fallos/index.php?booConn='.$e->getMessage());
-        }
-        echo "Se deberia estar creando 1 archivo de registro para este error: ".$e->getMessage()."<br>\n";
+        echo "getMessage() Interrupcion en ".__LINE__." ruta ".__NAMESPACE__."<br>\n";
+        echo "<pre>";
+        print_r($e->getMessage());
+        echo "</pre>";
         exit;
     }
+
     
+    
+    $tipoCnn="";
+    $tipoCnn="carga";
+    echo "queBD <pre>\n";
+    print_r($queBD);
+    echo "</pre>";
     /* 
      * Se definen tres tipos de conexiones: 
      * Funcion inception en layer($estado, $nameLayer){
@@ -157,14 +175,12 @@
      *  
      *  throw new inception en layer B.
      */
-    $adminCrud = new conexion($setData, $queBD);
+    $adminCrud = new conexion($setData, $queBD, false, $tipoCnn);
     $booConn = $adminCrud->verificaConn($conn);
-        /*
-        echo "<pre>";
-        print_r($booConn);
-        echo "</pre>";
-        exit;
-        */
+    echo "<pre>";
+    print_r($booConn);
+    echo "</pre>";
+    exit;
     use dinamica;
     $dinamicaAPP = new dinamica\dinamicaAPP();
     $ruta=$dinamicaAPP->dinamica($booConn);

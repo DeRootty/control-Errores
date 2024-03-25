@@ -19,12 +19,12 @@
     
     try{
         if(count(CONST_USR) == 0 || !defined("CONST_USR")){
-            throw new Exception("El archivo al que estas invocabdo, ".__NAMESPACE__." >> ".__LINE__." no hereda los permisos de ejecucion en 8");
+            throw new Exception("El archivo al que estas invocabdo, " . __NAMESPACE__ . " >> " . __LINE__ . " no hereda los permisos de ejecucion en 8");
         }
         foreach(CONST_USR as $idVal => $valEnd){
             if((BASE_PATH != $valEnd) && (ROOT_INDEX != $valEnd) ){
                 if(!file_exists(BASE_PATH . $valEnd."/index.php")){
-                    throw new Exception("Este archivo ". BASE_PATH . $valEnd."/index.php || ".  __NAMESPACE__." >> ".__LINE__." no hereda los permisos de ejecucion");
+                    throw new Exception("Este archivo ". BASE_PATH . $valEnd."/index.php || " . __NAMESPACE__ . " >> " . __LINE__ . " no hereda los permisos de ejecucion");
                 }
             }
             //echo $idVal." => ".$valEnd."<br>\n";

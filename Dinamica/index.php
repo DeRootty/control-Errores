@@ -1,6 +1,17 @@
 <?php declare(strict_types=1);
 
 namespace dinamica;
+    use Exception;
+    try{
+        if(!file_exists("/srv/vhost/derootty.xyz/home/html/Dinamica/seguridad/ahead.php")){
+            throw new Exception("Fallo en el fundamento inherente a la seguridad. El archivo ".__FILE__." Viola el acceso al recurso");
+        }
+    } catch (Exception $ex) {
+        echo $ex->getMessage();
+        exit;
+    }finally{
+        include ("/srv/vhost/derootty.xyz/home/html/Dinamica/seguridad/ahead.php");
+    }
     //Nos aseguramos de que tenemos acceso a la ejecucion del flujo logico del controlador
     try{
         if(count(CONST_USR) < 1 ){
@@ -19,7 +30,6 @@ namespace dinamica;
         echo $e->getMessage();
         exit;
     } 
-
 
     class dinamicaAPP{
         public array $dinamica;

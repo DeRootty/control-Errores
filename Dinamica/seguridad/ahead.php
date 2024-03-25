@@ -16,8 +16,10 @@
         }
         foreach(CONST_USR as $idVal => $valEnd){
             if((BASE_PATH != $valEnd) && (ROOT_INDEX != $valEnd) ){
-                if(!file_exists(BASE_PATH . $valEnd."/index.php")){
-                    throw new Exception("Este archivo ". BASE_PATH . $valEnd."/index.php || ".  __NAMESPACE__." >> ".__LINE__." no hereda los permisos de ejecucion");
+                if($_SERVER["SERVER_NAME"] !== $valEnd && $idVal !== "CURL_PATH"){
+                    if(!file_exists(BASE_PATH . $valEnd."/index.php")){
+                        throw new Exception("Este archivo ". BASE_PATH . $valEnd."/index.php || ".  __NAMESPACE__." >> ".__LINE__." no hereda los permisos de ejecucion");
+                    }
                 }
             }
             //echo $idVal." => ".$valEnd."<br>\n";

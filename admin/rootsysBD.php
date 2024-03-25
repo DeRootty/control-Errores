@@ -45,10 +45,12 @@ exit;
 
 class cargaAdmin{
     public array $adminBD = array();
+    private bool $depuracion;
 
-    public function __construct(){
+    public function __construct($depuracion){
         $ejercicio=array("back","front","deep");
         //$servername = "https://sldn296.piensasolutions.com/";
+        $this->depuracion=$depuracion;
         $servername = $_SERVER["SERVER_NAME"];
         $username = "";
         $password = "";
@@ -75,32 +77,79 @@ class cargaAdmin{
 
     }
 
-    private function cargaCredenciales(){
+    private function cargaCredenciales(string $destino, bool $check): array{
+        $salida=array(
+            "A" => array(),
+            "B" => array(),
+            "C" => array(),
+            "D" => array(),
+            "E" => array(),
+        );
         try {
-            if(file_exists("data/products.json")){
-
+            //echo "iniciando peticion<br>\n";
+            $url = "http://www.derootty.xyz/mydata/engine/datosAcceso.php?inicio=".$destino;
+            //$url = 'http://localhost/mydata/engine/datosAcceso.php?inicio=transmite';
+            $curl = curl_init();
+            curl_setopt($curl, CURLOPT_URL, $url);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_HEADER, false);
+            $data = json_decode(curl_exec($curl),true);
+            if(!is_array($data)){
+                array_push($salida["A"], $this->depuracion);
+                array_push($salida["B"], "cargaCredenciales: rootysysBD.php");
+                array_push($salida["C"], "http://www.derootty.xyz/mydata/engine/datosAcceso.php?inicio=".$destino);
+                array_push($salida["D"], $check);
+                array_push($salida["E"], true);
+                curl_close($curl);
+                echo "<pre>";
+                print_r($data);
+                echo "</pre>";
+                throw new Exception($salida);
             }
-            $data = file_get_contents("data/products.json");
-            $products = json_decode($data, true);
+            if (!curl_errno($curl)) {
+              $info = curl_getinfo($curl);
+              echo curl_error($curl);
+            }
 
         } catch (Exception $e) {
             echo 'Excepción capturada: ',  $e->getMessage(), "\n";
+            exit;
         }
-
+        return $salida;
     }
-    public function dameDatos(){
-        $salida=array();
+    public function dameDatos(bool $check): array{
+        $salida=array(
+            "A" => array(),
+            "B" => array(),
+            "C" => array(),
+            "D" => array(),
+            "E" => array()
+        );
+        if($check){
+            array_push($salida["A"], $this->adminBD);
+            array_push($salida["B"], "La funcion dameDatos() se ha invocado con exito<br>\n");
+            array_push($salida["C"], "Archivo hubicado en " . __FILE__ . " en linea: " . __LINE__ . "<br>\n");
+            array_push($salida["D"], $check);
+            array_push($salida["E"], true);
+            return $salida;
+        }
         try{
             if(is_array($this->adminBD && empty($this->adminBD)) ){
-                throw new Exception("Datos de conexion en mal estado ".__NAMESPACE__." Linea: ".__LINE__);
+                array_push($salida["A"], $this->adminBD);
+                array_push($salida["B"], "Los datos de conexion estan preparados para ser lanzados<br>\n");
+                array_push($salida["C"], "Capturada excepcion en " . $e->getMessage() . "<br>\n");
+                array_push($salida["D"], $check);
+                array_push($salida["E"], true);
+                throw new Exception($salida);
             }else{
-                array_push($salida, true);
-                array_push($salida, "Los datos de conexion estan preparados para ser lanzados<br>\n");
-                array_push($salida, $this->adminBD);
+                array_push($salida["A"], $this->adminBD);
+                array_push($salida["B"], "Los datos de conexion estan preparados para ser lanzados<br>\n");
+                array_push($salida["C"], "");
+                array_push($salida["D"], $check);
+                array_push($salida["E"], false);
             }
         }catch(Exception $e){
-            array_push($salida, true);
-            array_push($salida, "Capturada excepcion en " . $e->getMessage() . "<br>\n");
+            return $e->getMessage();
         }
         return $salida;
     }
