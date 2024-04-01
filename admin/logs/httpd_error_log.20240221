@@ -1,6 +1,0 @@
-[2024-02-21 15:17:40.597169] [proxy_fcgi:error] [pid 56100:tid 139981263709952] [client 88.6.30.112:60854] AH01071: Got error 'Primary script unknown'
-[2024-02-21 15:23:51.199099] [proxy_fcgi:error] [pid 124408:tid 139981070776064] [client 135.148.195.8:24979] AH01071: Got error 'Primary script unknown'
-[2024-02-21 15:40:29.566398] [proxy_fcgi:error] [pid 124408:tid 139980517119744] [client 88.6.30.112:55938] AH01071: Got error 'Primary script unknown'
-[2024-02-21 15:59:54.330145] [proxy_fcgi:error] [pid 56786:tid 139980533905152] [client 88.6.30.112:58320] AH01071: Got error 'Primary script unknown'
-[2024-02-21 16:02:40.331383] [proxy_fcgi:error] [pid 124408:tid 139980550690560] [client 88.6.30.112:45072] AH01071: Got error 'Primary script unknown'
-[2024-02-21 16:04:58.103755] [proxy_fcgi:error] [pid 56786:tid 139980500334336] [client 88.6.30.112:46858] AH01071: Got error 'Primary script unknown'
